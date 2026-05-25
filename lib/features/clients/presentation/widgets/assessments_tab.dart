@@ -54,9 +54,11 @@ class AssessmentsTab extends ConsumerWidget {
 
     return assessmentsAsync.when(
       data: (assessments) {
+        final sorted = List<AssessmentSession>.from(assessments)
+          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
         final sessions = sessionsAsync.value ?? <Session>[];
         final sessionMap = <String, Session>{for (final s in sessions) s.id: s};
-        if (assessments.isEmpty) {
+        if (sorted.isEmpty) {
           return const Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -80,9 +82,9 @@ class AssessmentsTab extends ConsumerWidget {
         }
         return ListView.builder(
           padding: const EdgeInsets.all(AppSpacing.md),
-          itemCount: assessments.length,
+          itemCount: sorted.length,
           itemBuilder: (context, index) {
-            final assessment = assessments[index];
+            final assessment = sorted[index];
             final _isDark = Theme.of(context).brightness == Brightness.dark;
             return Padding(
               padding: const EdgeInsets.only(bottom: AppSpacing.md),

@@ -244,7 +244,7 @@ class _SelectSessionDialogState extends ConsumerState<SelectSessionDialog> {
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime(2020),
-      lastDate: DateTime.now(),
+      lastDate: DateTime(2100),
     );
     if (date != null) {
       setState(() => _selectedDate = date);

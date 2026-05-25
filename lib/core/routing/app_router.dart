@@ -12,6 +12,7 @@ import '../../features/clients/presentation/screens/client_screen.dart';
 import '../../features/contacts/presentation/screens/contacts_screen.dart';
 import '../../features/clients/presentation/screens/session_detail_screen.dart';
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
+import '../../features/settings/presentation/screens/attention_required_screen.dart';
 import '../../features/settings/presentation/screens/mhpss_basics_screen.dart';
 import '../../features/settings/presentation/screens/privacy_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
@@ -166,6 +167,12 @@ GoRouter appRouter(ref) {
                 pageBuilder: (context, state) =>
                     const NoTransitionPage(child: SettingsScreen()),
                 routes: [
+                  GoRoute(
+                    path: 'attention-required',
+                    name: 'attentionRequired',
+                    pageBuilder: (context, state) =>
+                        const NoTransitionPage(child: AttentionRequiredScreen()),
+                  ),
                   GoRoute(
                     path: 'mhpss-basics',
                     name: 'mhpssBasics',

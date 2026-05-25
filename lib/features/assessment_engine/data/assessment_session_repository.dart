@@ -49,6 +49,10 @@ class AssessmentSessionRepository {
     await _sessions.doc(sessionId).update({'reviewed': true});
   }
 
+  Future<void> markAsUnreviewed(String sessionId) async {
+    await _sessions.doc(sessionId).update({'reviewed': false});
+  }
+
   Future<void> deleteSession(String sessionId) async {
     await _sessions.doc(sessionId).delete();
   }

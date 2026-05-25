@@ -97,6 +97,27 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                               await ref.read(assessmentSessionRepositoryProvider).markAsReviewed(sessionId);
                               ref.invalidate(allAssessmentSessionsProvider);
                               ref.invalidate(dashboardDataProvider);
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: const Text('Alert dismissed'),
+                                    behavior: SnackBarBehavior.floating,
+                                    duration: const Duration(seconds: 2),
+                                    action: SnackBarAction(
+                                      label: 'Undo',
+                                      onPressed: () async {
+                                        try {
+                                          await ref.read(assessmentSessionRepositoryProvider).markAsUnreviewed(sessionId);
+                                          ref.invalidate(allAssessmentSessionsProvider);
+                                          ref.invalidate(dashboardDataProvider);
+                                        } catch (e, stack) {
+                                          AppLogger.error('Failed to undo dismiss', {'sessionId': sessionId}, e, stack);
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                );
+                              }
                             } catch (e, stack) {
                               AppLogger.error('Failed to dismiss alert', {'sessionId': sessionId}, e, stack);
                             }

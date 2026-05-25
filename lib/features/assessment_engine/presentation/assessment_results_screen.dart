@@ -649,7 +649,7 @@ class SessionPickerDialogState extends State<SessionPickerDialog> {
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime(2020),
-      lastDate: DateTime.now(),
+      lastDate: DateTime(2100),
     );
     if (date != null) setState(() => _selectedDate = date);
   }

@@ -237,7 +237,7 @@ class _ClientDetailScreenState extends ConsumerState<ClientDetailScreen> {
                               context: ctx,
                               initialDate: joinDate,
                               firstDate: DateTime(2020),
-                              lastDate: DateTime.now(),
+                              lastDate: DateTime(2100),
                               helpText: 'Select join date',
                             );
                             if (picked != null) {

@@ -21,6 +21,14 @@ class SupportSection extends StatelessWidget {
             ),
             const Divider(height: 1, indent: 56),
             SettingsListTile(
+              title: 'Attention Required',
+              icon: Icons.warning_amber_rounded,
+              iconColor: Colors.red,
+              textColor: Colors.red,
+              onTap: () => context.go('/settings/attention-required'),
+            ),
+            const Divider(height: 1, indent: 56),
+            SettingsListTile(
               title: 'Privacy & Security',
               icon: Icons.security_rounded,
               onTap: () => context.go('/settings/privacy'),
