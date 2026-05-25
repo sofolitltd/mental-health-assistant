@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '/core/design_system/app_design_system.dart';
 import '../../../contacts/domain/counselor.dart';
@@ -18,6 +19,13 @@ class AboutTab extends ConsumerStatefulWidget {
 }
 
 class _AboutTabState extends ConsumerState<AboutTab> {
+  Future<void> _launchCall(String phone) async {
+    final uri = Uri.parse('tel:${phone.replaceAll(RegExp(r'\s+'), '')}');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    }
+  }
+
   Future<void> _removeCounselor(String uid) async {
     final updated = Client(
       id: widget.client.id,
@@ -28,6 +36,7 @@ class _AboutTabState extends ConsumerState<AboutTab> {
       createdAt: widget.client.createdAt,
       joinDate: widget.client.joinDate,
       dateOfBirth: widget.client.dateOfBirth,
+      phone: widget.client.phone,
     );
     await ref.read(clientRepositoryProvider).updateClient(updated);
   }
@@ -176,8 +185,58 @@ class _AboutTabState extends ConsumerState<AboutTab> {
                                     );
                                   }).toList(),
                                 ),
+          ),
+          if (widget.client.phone != null && widget.client.phone!.isNotEmpty) 
+          ...[
+            const SizedBox(height: AppSpacing.md),
+            InfoCard(
+              title: 'Contact',
+              children: [
+                InkWell(
+                  onTap: () => _launchCall(widget.client.phone!),
+                  borderRadius: AppRadius.roundedSm,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.green.withValues(alpha: 0.1),
+                            borderRadius: AppRadius.roundedSm,
+                          ),
+                          child: const Icon(Icons.phone_rounded, color: Colors.green, size: 20),
                         ),
-                        const SizedBox(height: AppSpacing.md),
+                        const SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.client.phone!,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15,
+                                  color: textPrimary,
+                                ),
+                              ),
+                              Text(
+                                'Tap to call',
+                                style: TextStyle(fontSize: 12, color: textSecondary),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(Icons.call_made_rounded, size: 18, color: Colors.green),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+          const SizedBox(height: AppSpacing.md),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
@@ -229,6 +288,7 @@ class _AboutTabState extends ConsumerState<AboutTab> {
       createdAt: widget.client.createdAt,
       joinDate: widget.client.joinDate,
       dateOfBirth: widget.client.dateOfBirth,
+      phone: widget.client.phone,
     );
     await ref.read(clientRepositoryProvider).updateClient(updated);
   }
@@ -328,6 +388,7 @@ class _AboutTabState extends ConsumerState<AboutTab> {
             title: 'General Information',
             children: [
               InfoRow(label: 'Alias Code', value: widget.client.aliasCode),
+              if (widget.client.phone != null) InfoRow(label: 'Phone (debug)', value: widget.client.phone!),
               InfoRow(label: 'Age', value: widget.client.dateOfBirth != null ? '${widget.client.age} years' : 'N/A'),
               InfoRow(label: 'Gender', value: widget.client.gender),
               InfoRow(
@@ -337,11 +398,65 @@ class _AboutTabState extends ConsumerState<AboutTab> {
                     : 'N/A',
               ),
               InfoRow(
+                label: 'Join Date',
+                value: widget.client.joinDate != null
+                    ? DateFormat.yMMMd().format(widget.client.joinDate!)
+                    : 'N/A',
+              ),
+              InfoRow(
                 label: 'Registered On',
                 value: DateFormat.yMMMd().format(widget.client.createdAt),
               ),
             ],
           ),
+          const SizedBox(height: AppSpacing.md),
+          if (widget.client.phone != null && widget.client.phone!.isNotEmpty)
+            InfoCard(
+              title: 'Contact',
+              children: [
+                InkWell(
+                  onTap: () => _launchCall(widget.client.phone!),
+                  borderRadius: AppRadius.roundedSm,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.green.withValues(alpha: 0.1),
+                            borderRadius: AppRadius.roundedSm,
+                          ),
+                          child: const Icon(Icons.phone_rounded, color: Colors.green, size: 20),
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.client.phone!,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15,
+                                  color: textPrimary,
+                                ),
+                              ),
+                              Text(
+                                'Tap to call',
+                                style: TextStyle(fontSize: 12, color: textSecondary),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(Icons.call_made_rounded, size: 18, color: Colors.green),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           const SizedBox(height: AppSpacing.md),
           InfoCard(
             title: 'Counselors',

@@ -8,10 +8,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '/core/design_system/app_design_system.dart';
+import '/core/logger/app_logger.dart';
 import '../../domain/session.dart';
 import '../providers/client_detail_providers.dart';
 import '../../../contacts/presentation/providers/contacts_providers.dart';
 import '../../../assessment_engine/presentation/providers/assessment_session_providers.dart';
+import '../../../dashboard/presentation/providers/dashboard_providers.dart';
 import 'widgets/session_info_card.dart';
 import 'widgets/session_sections.dart';
 import 'widgets/session_assessment_section.dart';
@@ -79,7 +81,8 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
     if (!_hasChanges) return;
     setState(() => _isSaving = true);
     try {
-      final updated = widget.session.copyWith(
+      final original = widget.session;
+      final updated = original.copyWith(
         notes: _notesController.text.trim(),
         status: _status,
         date: _date,
@@ -92,12 +95,20 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
         locationTimestamp: _locationTimestamp,
       );
       await ref.read(sessionRepositoryProvider).updateSession(updated);
+      ref.invalidate(allSessionsProvider);
+      ref.invalidate(dashboardDataProvider);
+      AppLogger.info('Session saved', {
+        'sessionId': original.id,
+        'clientId': original.clientId,
+        'hasLocation': _latitude != null,
+      });
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Session saved')),
         );
       }
-    } catch (e) {
+    } catch (e, stack) {
+      AppLogger.error('Failed to save session', {'sessionId': widget.session.id}, e, stack);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: $e')),
@@ -109,9 +120,45 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
   }
 
   Future<void> _recordLocation() async {
-    final permission = await Geolocator.requestPermission();
-    if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) return;
+    if (_isLocating) {
+      AppLogger.warn('Record location skipped — already in progress');
+      return;
+    }
     setState(() => _isLocating = true);
+    AppLogger.info('Record location started', {'sessionId': widget.session.id});
+
+    try {
+      final permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        AppLogger.warn('Location permission denied');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Location permission denied.')),
+          );
+        }
+        setState(() => _isLocating = false);
+        return;
+      }
+      if (permission == LocationPermission.deniedForever) {
+        AppLogger.warn('Location permission denied forever');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Location permission permanently denied. Enable in settings.')),
+          );
+        }
+        setState(() => _isLocating = false);
+        return;
+      }
+    } catch (e, stack) {
+      AppLogger.error('Location permission request failed', null, e, stack);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Permission error: $e')),
+        );
+      }
+      setState(() => _isLocating = false);
+      return;
+    }
 
     const desiredAccuracy = 10.0;
     const maxAttempts = 5;
@@ -120,13 +167,20 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
     var lngSum = 0.0;
     var goodCount = 0;
 
+    final locationSettings = kIsWeb
+        ? const LocationSettings(
+            accuracy: LocationAccuracy.low,
+            timeLimit: Duration(seconds: 30),
+          )
+        : const LocationSettings(
+            accuracy: LocationAccuracy.high,
+            timeLimit: Duration(seconds: 5),
+          );
+
     for (var i = 0; i < maxAttempts; i++) {
       try {
         final pos = await Geolocator.getCurrentPosition(
-          locationSettings: const LocationSettings(
-            accuracy: LocationAccuracy.high,
-            timeLimit: Duration(seconds: 5),
-          ),
+          locationSettings: locationSettings,
         );
         final acc = pos.accuracy;
         if (best == null || best.accuracy > acc) {
@@ -138,7 +192,12 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
           goodCount++;
         }
         if (goodCount >= 2) break;
-      } catch (_) {}
+      } catch (e, stack) {
+        AppLogger.warn('GPS attempt $i failed', {'sessionId': widget.session.id}, e);
+        if (i == maxAttempts - 1) {
+          AppLogger.error('All GPS attempts exhausted', {'sessionId': widget.session.id}, e, stack);
+        }
+      }
       if (i < maxAttempts - 1) await Future.delayed(const Duration(milliseconds: 800));
     }
 
@@ -163,6 +222,13 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
         _latitude = pos.latitude;
         _longitude = pos.longitude;
         _locationTimestamp = DateTime.now();
+        AppLogger.info('Location recorded', {
+          'sessionId': widget.session.id,
+          'latitude': pos.latitude,
+          'longitude': pos.longitude,
+          'accuracy': pos.accuracy,
+          'goodReadings': goodCount,
+        });
       }
     });
     if (pos == null && context.mounted) {
@@ -562,3 +628,4 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
     if (date != null) setState(() => _followUpDate = date);
   }
 }
+

@@ -33,7 +33,7 @@ final class ClientsProvider
   Clients create() => Clients();
 }
 
-String _$clientsHash() => r'743b894eff92b76a4b60e1c87f0fc1d3c6310438';
+String _$clientsHash() => r'8a4a1f1e8f707f1547aa71abd43ceee08ae803e1';
 
 abstract class _$Clients extends $StreamNotifier<List<Client>> {
   Stream<List<Client>> build();

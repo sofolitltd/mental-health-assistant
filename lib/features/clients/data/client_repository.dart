@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../domain/models/client.dart';
@@ -7,6 +8,15 @@ final clientRepositoryProvider = Provider((ref) => ClientRepository());
 
 class ClientRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  ClientRepository() {
+    debugPrint(
+      'Firebase composite index needed for sorted clients query:\n'
+      'Collection: clients\n'
+      'Fields: organizationId (Ascending), counselorIds (Array), joinDate (Descending)\n'
+      'Create at: https://console.firebase.google.com/project/_/firestore/indexes',
+    );
+  }
 
   Future<List<Client>> getClients(String organizationId, String uid) async {
     final snapshot = await _firestore

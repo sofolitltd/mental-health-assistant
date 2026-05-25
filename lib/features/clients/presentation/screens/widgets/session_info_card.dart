@@ -117,7 +117,7 @@ class SessionInfoCard extends StatelessWidget {
                       Icon(Icons.access_time_rounded, size: 16, color: textSecondary),
                       const SizedBox(width: AppSpacing.sm),
                       Text(
-                        startTime != null ? DateFormat('HH:mm').format(startTime!) : 'Start',
+                        startTime != null ? DateFormat('h:mm a').format(startTime!) : 'Start',
                         style: TextStyle(color: startTime != null ? textPrimary : textSecondary),
                       ),
                       if (startTime != null && onClearStartTime != null)
@@ -144,7 +144,7 @@ class SessionInfoCard extends StatelessWidget {
                       Icon(Icons.access_time_rounded, size: 16, color: textSecondary),
                       const SizedBox(width: AppSpacing.sm),
                       Text(
-                        endTime != null ? DateFormat('HH:mm').format(endTime!) : 'End',
+                        endTime != null ? DateFormat('h:mm a').format(endTime!) : 'End',
                         style: TextStyle(color: endTime != null ? textPrimary : textSecondary),
                       ),
                       if (endTime != null && onClearEndTime != null)

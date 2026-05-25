@@ -41,7 +41,7 @@ final class AssessmentProvider
   }
 }
 
-String _$assessmentHash() => r'0786b0d66cf09db14b659a5c7bfaa797f30b1e23';
+String _$assessmentHash() => r'c0df9a56552dfdf1c3d5aab117f33641aab9ea48';
 
 abstract class _$Assessment extends $Notifier<AssessmentState> {
   AssessmentState build();

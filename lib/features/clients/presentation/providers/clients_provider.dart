@@ -20,7 +20,7 @@ class Clients extends _$Clients {
     return ref.read(clientRepositoryProvider).watchClients(organizationId, uid);
   }
 
-  Future<void> addClient(String aliasCode, String gender, {DateTime? joinDate, DateTime? dateOfBirth}) async {
+  Future<void> addClient(String aliasCode, String gender, {DateTime? joinDate, DateTime? dateOfBirth, String? phone}) async {
     final authState = ref.read(authProvider);
     final orgId = authState.organizationId;
     final uid = authState.uid;
@@ -38,6 +38,7 @@ class Clients extends _$Clients {
       createdAt: DateTime.now(),
       joinDate: joinDate,
       dateOfBirth: dateOfBirth,
+      phone: phone,
     );
 
     await ref.read(clientRepositoryProvider).addClient(newClient);

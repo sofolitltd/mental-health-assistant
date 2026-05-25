@@ -9,6 +9,7 @@ class Client {
   final DateTime createdAt;
   final DateTime? joinDate;
   final DateTime? dateOfBirth;
+  final String? phone;
 
   Client({
     required this.id,
@@ -19,6 +20,7 @@ class Client {
     required this.createdAt,
     this.joinDate,
     this.dateOfBirth,
+    this.phone,
   });
 
   int get age {
@@ -52,6 +54,7 @@ class Client {
           : map['dateOfBirth'] is String
               ? DateTime.parse(map['dateOfBirth'] as String)
               : null,
+      phone: map['phone'] as String?,
     );
   }
 
@@ -64,6 +67,7 @@ class Client {
       'createdAt': Timestamp.fromDate(createdAt),
       if (joinDate != null) 'joinDate': Timestamp.fromDate(joinDate!),
       if (dateOfBirth != null) 'dateOfBirth': Timestamp.fromDate(dateOfBirth!),
+      if (phone != null) 'phone': phone,
     };
   }
 }

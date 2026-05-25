@@ -52,20 +52,13 @@ Future<DashboardData> dashboardData(ref) async {
     return s.date.isAfter(weekStart) && s.status == 'completed';
   }).length;
 
-  final List<Session> recentSessions = sessions.where((Session s) {
-    return s.status == 'completed';
-  }).toList()
-    ..sort((Session a, Session b) => b.createdAt.compareTo(a.createdAt));
-
-  final recentClientIds = <String>{};
-  final recentClients = <Client>[];
-  for (final s in recentSessions) {
-    if (recentClientIds.length >= 5) break;
-    if (recentClientIds.add(s.clientId)) {
-      final client = clients.where((Client c) => c.id == s.clientId).firstOrNull;
-      if (client != null) recentClients.add(client);
-    }
-  }
+  final sortedByJoin = List<Client>.from(clients)
+    ..sort((a, b) {
+      final aDate = a.joinDate ?? a.createdAt;
+      final bDate = b.joinDate ?? b.createdAt;
+      return bDate.compareTo(aDate);
+    });
+  final recentClients = sortedByJoin.take(5).toList();
 
   final unreviewedAssessments = assessments.where((a) => !a.reviewed).toList();
 
@@ -110,6 +103,7 @@ Future<DashboardData> dashboardData(ref) async {
 
   return DashboardData(
     clientCount: clients.length,
+    sessions: sessions,
     todaySessions: todaySessions,
     weekSessionCount: weekSessions,
     weekAssessmentCount: weekAssessments,
@@ -123,6 +117,7 @@ Future<DashboardData> dashboardData(ref) async {
 
 class DashboardData {
   final int clientCount;
+  final List<Session> sessions;
   final List<Session> todaySessions;
   final int weekSessionCount;
   final int weekAssessmentCount;
@@ -132,6 +127,7 @@ class DashboardData {
 
   const DashboardData({
     required this.clientCount,
+    required this.sessions,
     required this.todaySessions,
     required this.weekSessionCount,
     required this.weekAssessmentCount,

@@ -197,7 +197,7 @@ class MaxWidthContainer extends StatelessWidget {
         constraints: BoxConstraints(maxWidth: maxWidth),
         child: Padding(
           padding:
-              padding ?? const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+              padding ?? const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
           child: child,
         ),
       ),

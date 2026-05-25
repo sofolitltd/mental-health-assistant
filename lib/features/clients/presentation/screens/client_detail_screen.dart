@@ -285,6 +285,7 @@ class _ClientDetailScreenState extends ConsumerState<ClientDetailScreen> {
                                   createdAt: client.createdAt,
                                   joinDate: joinDate,
                                   dateOfBirth: dateOfBirth,
+                                  phone: client.phone,
                                 );
                                 await ref.read(clientRepositoryProvider).updateClient(updated);
                                 if (ctx.mounted) Navigator.pop(ctx);
@@ -447,18 +448,28 @@ class _ClientDetailScreenState extends ConsumerState<ClientDetailScreen> {
                           itemBuilder: (context) => [
                             const PopupMenuItem(
                               value: 'edit',
-                              child: ListTile(
-                                leading: Icon(Icons.edit_outlined, color: AppColors.primary),
-                                title: Text('Edit'),
-                                contentPadding: EdgeInsets.zero,
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.edit_outlined, color: AppColors.primary, size: 20),
+                                    SizedBox(width: 12),
+                                    Text('Edit'),
+                                  ],
+                                ),
                               ),
                             ),
                             const PopupMenuItem(
                               value: 'delete',
-                              child: ListTile(
-                                leading: Icon(Icons.delete_outline, color: Colors.red),
-                                title: Text('Delete', style: TextStyle(color: Colors.red)),
-                                contentPadding: EdgeInsets.zero,
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                                    SizedBox(width: 12),
+                                    Text('Delete', style: TextStyle(color: Colors.red)),
+                                  ],
+                                ),
                               ),
                             ),
                           ],
@@ -467,19 +478,22 @@ class _ClientDetailScreenState extends ConsumerState<ClientDetailScreen> {
                     ),
                   ];
                 },
-                body: IndexedStack(
-                  index: _tabIndex,
-                  children: [
-                    AboutTab(client: client),
-                    SessionsTab(
-                      clientId: widget.clientId,
-                      clientAlias: client.aliasCode,
-                    ),
-                    AssessmentsTab(
-                      clientId: widget.clientId,
-                      clientAlias: client.aliasCode,
-                    ),
-                  ],
+                body: Padding(
+                  padding: EdgeInsets.only(bottom: 1),
+                  child: IndexedStack(
+                    index: _tabIndex,
+                    children: [
+                      AboutTab(client: client),
+                      SessionsTab(
+                        clientId: widget.clientId,
+                        clientAlias: client.aliasCode,
+                      ),
+                      AssessmentsTab(
+                        clientId: widget.clientId,
+                        clientAlias: client.aliasCode,
+                      ),
+                    ],
+                  ),
                 ),
               ),
               if (_tabIndex == 2)

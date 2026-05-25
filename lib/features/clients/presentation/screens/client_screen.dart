@@ -42,7 +42,13 @@ class ClientScreen extends ConsumerWidget {
                       ),
                       clientsAsyncValue.when(
                         data: (clients) {
-                          if (clients.isEmpty) {
+                          final sorted = List<Client>.from(clients)
+                            ..sort((a, b) {
+                              final aDate = a.joinDate ?? a.createdAt;
+                              final bDate = b.joinDate ?? b.createdAt;
+                              return bDate.compareTo(aDate);
+                            });
+                          if (sorted.isEmpty) {
                             return SliverFillRemaining(
                               hasScrollBody: false,
                               child: Center(
@@ -74,9 +80,9 @@ class ClientScreen extends ConsumerWidget {
                                 crossAxisCount: 2,
                                 mainAxisSpacing: AppSpacing.md,
                                 crossAxisSpacing: AppSpacing.md,
-                                childCount: clients.length,
+                                childCount: sorted.length,
                                 itemBuilder: (context, index) =>
-                                    _ClientListItem(client: clients[index]),
+                                    _ClientListItem(client: sorted[index]),
                               ),
                             );
                           }
@@ -85,13 +91,13 @@ class ClientScreen extends ConsumerWidget {
                             sliver: SliverList(
                               delegate: SliverChildBuilderDelegate(
                                 (context, index) {
-                                  final client = clients[index];
+                                  final client = sorted[index];
                                   return Padding(
                                     padding: const EdgeInsets.only(bottom: AppSpacing.md),
                                     child: _ClientListItem(client: client),
                                   );
                                 },
-                                childCount: clients.length,
+                                childCount: sorted.length,
                               ),
                             ),
                           );
@@ -188,21 +194,7 @@ class _ClientListItem extends StatelessWidget {
                       color: AppColors.primary.withValues(alpha: 0.1),
                       borderRadius: AppRadius.roundedSm,
                     ),
-                    child: Text(
-                      client.aliasCode.isNotEmpty
-                          ? client.aliasCode
-                                .substring(
-                                  0,
-                                  client.aliasCode.length >= 2 ? 2 : 1,
-                                )
-                                .toUpperCase()
-                          : '??',
-                      style: const TextStyle(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
+                   
                   ),
                   const SizedBox(width: AppSpacing.md),
                   Expanded(
@@ -268,13 +260,7 @@ class _ClientListItem extends StatelessWidget {
   }
 
   String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final diff = now.difference(date).inDays;
-    if (diff == 0) return 'today';
-    if (diff == 1) return 'yesterday';
-    if (diff < 7) return '$diff days ago';
-    if (diff < 30) return '${diff ~/ 7}w ago';
-    return '${diff ~/ 30}mo ago';
+    return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
   }
 }
 
@@ -288,6 +274,7 @@ class AddClientDialog extends ConsumerStatefulWidget {
 class _AddClientDialogState extends ConsumerState<AddClientDialog> {
   final _formKey = GlobalKey<FormState>();
   final _aliasController = TextEditingController();
+  final _phoneController = TextEditingController();
   DateTime? _dateOfBirth;
   DateTime _joinDate = DateTime.now();
   String _gender = 'Male';
@@ -307,6 +294,7 @@ class _AddClientDialogState extends ConsumerState<AddClientDialog> {
   @override
   void dispose() {
     _aliasController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
@@ -459,6 +447,14 @@ class _AddClientDialogState extends ConsumerState<AddClientDialog> {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.lg),
+                  _DialogTextField(
+                    controller: _phoneController,
+                    label: 'Phone',
+                    hint: 'e.g. +8801XXXXXXXXX',
+                    prefixIcon: Icons.phone_rounded,
+                    keyboardType: TextInputType.phone,
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
                   Text(
                     'Join Date',
                     style: TextStyle(
@@ -577,6 +573,7 @@ class _AddClientDialogState extends ConsumerState<AddClientDialog> {
             _gender,
             joinDate: _joinDate,
             dateOfBirth: _dateOfBirth,
+            phone: _phoneController.text.trim(),
           );
       if (mounted) Navigator.pop(context);
     } catch (e) {

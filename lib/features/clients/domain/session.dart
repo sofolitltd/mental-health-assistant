@@ -1,3 +1,9 @@
+class _Sentinel {
+  const _Sentinel();
+}
+
+const _sentinel = _Sentinel();
+
 class Session {
   final String id;
   final String clientId;
@@ -43,12 +49,12 @@ class Session {
     String? notes,
     String? status,
     DateTime? createdAt,
-    DateTime? followUpDate,
-    DateTime? startTime,
-    DateTime? endTime,
-    double? latitude,
-    double? longitude,
-    DateTime? locationTimestamp,
+    Object? followUpDate = _sentinel,
+    Object? startTime = _sentinel,
+    Object? endTime = _sentinel,
+    Object? latitude = _sentinel,
+    Object? longitude = _sentinel,
+    Object? locationTimestamp = _sentinel,
   }) {
     return Session(
       id: id ?? this.id,
@@ -60,12 +66,12 @@ class Session {
       notes: notes ?? this.notes,
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
-      followUpDate: followUpDate ?? this.followUpDate,
-      startTime: startTime ?? this.startTime,
-      endTime: endTime ?? this.endTime,
-      latitude: latitude ?? this.latitude,
-      longitude: longitude ?? this.longitude,
-      locationTimestamp: locationTimestamp ?? this.locationTimestamp,
+      followUpDate: followUpDate is _Sentinel ? this.followUpDate : followUpDate as DateTime?,
+      startTime: startTime is _Sentinel ? this.startTime : startTime as DateTime?,
+      endTime: endTime is _Sentinel ? this.endTime : endTime as DateTime?,
+      latitude: latitude is _Sentinel ? this.latitude : latitude as double?,
+      longitude: longitude is _Sentinel ? this.longitude : longitude as double?,
+      locationTimestamp: locationTimestamp is _Sentinel ? this.locationTimestamp : locationTimestamp as DateTime?,
     );
   }
 
@@ -81,9 +87,9 @@ class Session {
         if (followUpDate != null) 'followUpDate': followUpDate!.toIso8601String(),
         if (startTime != null) 'startTime': startTime!.toIso8601String(),
         if (endTime != null) 'endTime': endTime!.toIso8601String(),
-        if (latitude != null) 'latitude': latitude,
-        if (longitude != null) 'longitude': longitude,
-        if (locationTimestamp != null) 'locationTimestamp': locationTimestamp!.toIso8601String(),
+        'latitude': latitude,
+        'longitude': longitude,
+        'locationTimestamp': locationTimestamp?.toIso8601String(),
       };
 
   factory Session.fromMap(Map<String, dynamic> map, String id) => Session(
