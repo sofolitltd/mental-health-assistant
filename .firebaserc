@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "mhassistantbd"
+  },
+  "targets": {
+    "mhassistantbd": {
+      "hosting": {
+        "secondary": [
+          "mhassistant"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "727430606967",
+    "project_id": "mhassistantbd",
+    "storage_bucket": "mhassistantbd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:727430606967:android:d6e085cf46f16a9c941672",
+        "android_client_info": {
+          "package_name": "com.sofolit.mh_assistant"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEomC9jZuCMHmEXp-wRu1UZzggyFzklx8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
