@@ -342,14 +342,14 @@ class _AddClientDialogState extends ConsumerState<AddClientDialog> {
                   const SizedBox(height: AppSpacing.lg),
                   _DialogTextField(
                     controller: _aliasController,
-                    label: 'Alias Code',
+                    label: 'Alias Code *',
                     hint: 'e.g. PAT-001',
                     prefixIcon: Icons.tag_rounded,
                     validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
                   ),
                   const SizedBox(height: AppSpacing.md),
                   Text(
-                    'Gender',
+                    'Gender *',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
@@ -456,7 +456,7 @@ class _AddClientDialogState extends ConsumerState<AddClientDialog> {
                   ),
                   const SizedBox(height: AppSpacing.lg),
                   Text(
-                    'Join Date',
+                    'Join Date *',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
@@ -552,16 +552,6 @@ class _AddClientDialogState extends ConsumerState<AddClientDialog> {
 
   Future<void> _handleSave() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_dateOfBirth == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Please select a date of birth'),
-          backgroundColor: AppColors.accent,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-      return;
-    }
 
     setState(() => _isLoading = true);
 

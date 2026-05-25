@@ -67,7 +67,7 @@ class ContactsScreen extends ConsumerWidget {
                         (context, index) {
                           final c = counselors[index];
                           return Padding(
-                            padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                            padding: const EdgeInsets.only(bottom: AppSpacing.md),
                             child: _CounselorCard(counselor: c),
                           );
                         },
@@ -177,6 +177,8 @@ class _CounselorCard extends StatelessWidget {
                       color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimary,
                     ),
                   ),
+                  const Spacer(),
+                  Icon(Icons.call_made_rounded, size: 18, color: AppColors.primary),
                 ],
               ),
             ),
@@ -197,6 +199,8 @@ class _CounselorCard extends StatelessWidget {
                       color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimary,
                     ),
                   ),
+                  const Spacer(),
+                  Icon(Icons.open_in_new_rounded, size: 18, color: AppColors.primary),
                 ],
               ),
             ),

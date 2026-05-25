@@ -388,9 +388,9 @@ class _AboutTabState extends ConsumerState<AboutTab> {
             title: 'General Information',
             children: [
               InfoRow(label: 'Alias Code', value: widget.client.aliasCode),
-              if (widget.client.phone != null) InfoRow(label: 'Phone (debug)', value: widget.client.phone!),
-              InfoRow(label: 'Age', value: widget.client.dateOfBirth != null ? '${widget.client.age} years' : 'N/A'),
               InfoRow(label: 'Gender', value: widget.client.gender),
+            
+              InfoRow(label: 'Age', value: widget.client.dateOfBirth != null ? '${widget.client.age} years' : 'N/A'),
               InfoRow(
                 label: 'Date of Birth',
                 value: widget.client.dateOfBirth != null

@@ -75,24 +75,35 @@ class TodaySchedule extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  DropdownButton<ScheduleRange>(
-                    value: range,
-                    underline: const SizedBox(),
-                    icon: Icon(Icons.arrow_drop_down_rounded, color: textSecondary, size: 20),
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: textSecondary,
-                      fontFamily: fontFamily,
+                  Container(
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: isDark ? AppColors.surfaceDark : AppColors.surface,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: border),
                     ),
-                    items: const [
-                      DropdownMenuItem(value: ScheduleRange.today, child: Text('Today')),
-                      DropdownMenuItem(value: ScheduleRange.week, child: Text('This Week')),
-                      DropdownMenuItem(value: ScheduleRange.month, child: Text('This Month')),
-                    ],
-                    onChanged: (v) {
-                      if (v != null) onRangeChanged(v);
-                    },
+                    child: ButtonTheme(
+                      alignedDropdown: true,
+                      child: DropdownButton<ScheduleRange>(
+                        value: range,
+                        underline: const SizedBox(),
+                        icon: Icon(Icons.arrow_drop_down_rounded, color: textSecondary, size: 20),
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: textSecondary,
+                          fontFamily: fontFamily,
+                        ),
+                        items: const [
+                          DropdownMenuItem(value: ScheduleRange.today, child: Text('Today')),
+                          DropdownMenuItem(value: ScheduleRange.week, child: Text('This Week')),
+                          DropdownMenuItem(value: ScheduleRange.month, child: Text('This Month')),
+                        ],
+                        onChanged: (v) {
+                          if (v != null) onRangeChanged(v);
+                        },
+                      ),
+                    ),
                   ),
                 ],
               ),
