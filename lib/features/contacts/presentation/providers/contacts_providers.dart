@@ -15,13 +15,13 @@ ContactRepository contactRepository(ref) {
 @riverpod
 Stream<List<Contact>> clientContacts(ref, String clientId) {
   final repository = ref.watch(contactRepositoryProvider);
-  return repository.watchContactsByClientId(clientId);
+  return repository.watchContactsByClientId(clientId).handleError((_) => <Contact>[]);
 }
 
 @riverpod
 Stream<List<Contact>> allContacts(ref) {
   final repository = ref.watch(contactRepositoryProvider);
-  return repository.watchAllContacts();
+  return repository.watchAllContacts().handleError((_) => <Contact>[]);
 }
 
 @riverpod
@@ -32,5 +32,5 @@ CounselorRepository counselorRepository(ref) {
 @riverpod
 Stream<List<Counselor>> allCounselors(ref) {
   final repository = ref.watch(counselorRepositoryProvider);
-  return repository.watchAllCounselors();
+  return repository.watchAllCounselors().handleError((_) => <Counselor>[]);
 }

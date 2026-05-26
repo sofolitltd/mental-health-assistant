@@ -385,8 +385,11 @@ class _AddSessionDialogState extends ConsumerState<AddSessionDialog> {
                 _endTime!.hour, _endTime!.minute)
             : null;
 
+        final organizationId = ref.read(clientByIdProvider(widget.clientId))?.organizationId ?? '';
+
         final session = Session(
           id: _isEditing ? widget.session!.id : '',
+          organizationId: _isEditing ? widget.session!.organizationId : organizationId,
           clientId: widget.clientId,
           clientAlias: widget.clientAlias,
           counselorIds: _counselorIds,

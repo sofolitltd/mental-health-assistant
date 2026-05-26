@@ -11,6 +11,9 @@ _Organization _$OrganizationFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       name: json['name'] as String,
       code: json['code'] as String?,
+      createdAt: json['createdAt'] == null
+          ? null
+          : DateTime.parse(json['createdAt'] as String),
     );
 
 Map<String, dynamic> _$OrganizationToJson(_Organization instance) =>
@@ -18,4 +21,5 @@ Map<String, dynamic> _$OrganizationToJson(_Organization instance) =>
       'id': instance.id,
       'name': instance.name,
       'code': instance.code,
+      'createdAt': instance.createdAt?.toIso8601String(),
     };

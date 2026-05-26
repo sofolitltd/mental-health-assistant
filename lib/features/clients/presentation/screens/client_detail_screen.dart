@@ -73,6 +73,7 @@ class _ClientDetailScreenState extends ConsumerState<ClientDetailScreen> {
 
   void _showEditDialog(BuildContext context, Client client) {
     final aliasCtrl = TextEditingController(text: client.aliasCode);
+    final phoneCtrl = TextEditingController(text: client.phone ?? '');
     String gender = client.gender;
     DateTime? dateOfBirth = client.dateOfBirth;
     DateTime joinDate = client.joinDate ?? DateTime.now();
@@ -172,6 +173,28 @@ class _ClientDetailScreenState extends ConsumerState<ClientDetailScreen> {
                                 ))))
                                 .toList(),
                             onChanged: (v) => setDialogState(() => gender = v!),
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        Text('Phone', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: textPrimary)),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          controller: phoneCtrl,
+                          style: TextStyle(color: isDark ? textPrimary : textSecondary),
+                          keyboardType: TextInputType.phone,
+                          decoration: InputDecoration(
+                            hintText: 'e.g. +8801XXXXXXXXX',
+                            hintStyle: TextStyle(color: textSecondary),
+                            prefixIcon: const Icon(Icons.phone_rounded, size: 20),
+                            contentPadding: const EdgeInsets.all(12),
+                            border: OutlineInputBorder(
+                              borderRadius: AppRadius.roundedSm,
+                              borderSide: BorderSide(color: border),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: AppRadius.roundedSm,
+                              borderSide: BorderSide(color: border),
+                            ),
                           ),
                         ),
                         const SizedBox(height: AppSpacing.md),
@@ -285,7 +308,7 @@ class _ClientDetailScreenState extends ConsumerState<ClientDetailScreen> {
                                   createdAt: client.createdAt,
                                   joinDate: joinDate,
                                   dateOfBirth: dateOfBirth,
-                                  phone: client.phone,
+                                  phone: phoneCtrl.text.trim(),
                                 );
                                 await ref.read(clientRepositoryProvider).updateClient(updated);
                                 if (ctx.mounted) Navigator.pop(ctx);

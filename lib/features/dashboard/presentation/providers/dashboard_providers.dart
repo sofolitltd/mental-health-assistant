@@ -11,108 +11,130 @@ part 'dashboard_providers.g.dart';
 
 @riverpod
 Future<List<Session>> allSessions(ref) async {
-  final repo = ref.read(sessionRepositoryProvider);
-  return repo.getAllSessions();
+  try {
+    final repo = ref.read(sessionRepositoryProvider);
+    return repo.getAllSessions();
+  } catch (_) {
+    return [];
+  }
 }
 
 @riverpod
 Future<List<AssessmentSession>> allAssessmentSessions(ref) async {
-  final repo = ref.read(assessmentSessionRepositoryProvider);
-  return repo.getAllSessions();
+  try {
+    final repo = ref.read(assessmentSessionRepositoryProvider);
+    return repo.getAllSessions();
+  } catch (_) {
+    return [];
+  }
 }
 
 @riverpod
 Future<DashboardData> dashboardData(ref) async {
-  final clientsAsync = ref.watch(clientsProvider);
-  final clients = clientsAsync.value ?? [];
-  final clientIds = clients.map((c) => c.id).toSet();
+  try {
+    final clientsAsync = ref.watch(clientsProvider);
+    final clients = clientsAsync.value ?? [];
+    final clientIds = clients.map((c) => c.id).toSet();
 
-  final List<Session> allSessions = await ref.watch(allSessionsProvider.future);
-  final List<Session> sessions = allSessions.where((Session s) {
-    return clientIds.contains(s.clientId);
-  }).toList();
+    final List<Session> allSessions = await ref.watch(allSessionsProvider.future);
+    final List<Session> sessions = allSessions.where((Session s) {
+      return clientIds.contains(s.clientId);
+    }).toList();
 
-  final List<AssessmentSession> allAssessments = await ref.watch(allAssessmentSessionsProvider.future);
-  final List<AssessmentSession> assessments = allAssessments.where((AssessmentSession a) {
-    return clientIds.contains(a.clientId);
-  }).toList();
+    final List<AssessmentSession> allAssessments = await ref.watch(allAssessmentSessionsProvider.future);
+    final List<AssessmentSession> assessments = allAssessments.where((AssessmentSession a) {
+      return clientIds.contains(a.clientId);
+    }).toList();
 
-  final now = DateTime.now();
-  final todayStart = DateTime(now.year, now.month, now.day);
-  final weekStart = todayStart.subtract(Duration(days: todayStart.weekday - 1));
+    final now = DateTime.now();
+    final todayStart = DateTime(now.year, now.month, now.day);
+    final weekStart = todayStart.subtract(Duration(days: todayStart.weekday - 1));
 
-  final List<Session> todaySessions = sessions.where((Session s) {
-    return s.date.isAfter(todayStart.subtract(const Duration(hours: 1))) &&
-        s.date.isBefore(todayStart.add(const Duration(days: 1))) &&
-        s.status != 'cancelled';
-  }).toList()
-    ..sort((Session a, Session b) => a.date.compareTo(b.date));
+    final List<Session> todaySessions = sessions.where((Session s) {
+      return s.date.isAfter(todayStart.subtract(const Duration(hours: 1))) &&
+          s.date.isBefore(todayStart.add(const Duration(days: 1))) &&
+          s.status != 'cancelled';
+    }).toList()
+      ..sort((Session a, Session b) => a.date.compareTo(b.date));
 
-  final int weekSessions = sessions.where((Session s) {
-    return s.date.isAfter(weekStart) && s.status == 'completed';
-  }).length;
+    final int weekSessions = sessions.where((Session s) {
+      return s.date.isAfter(weekStart) && s.status == 'completed';
+    }).length;
 
-  final sortedByJoin = List<Client>.from(clients)
-    ..sort((a, b) {
-      final aDate = a.joinDate ?? a.createdAt;
-      final bDate = b.joinDate ?? b.createdAt;
-      return bDate.compareTo(aDate);
-    });
-  final recentClients = sortedByJoin.take(5).toList();
+    final sortedByJoin = List<Client>.from(clients)
+      ..sort((a, b) {
+        final aDate = a.joinDate ?? a.createdAt;
+        final bDate = b.joinDate ?? b.createdAt;
+        return bDate.compareTo(aDate);
+      });
+    final recentClients = sortedByJoin.take(5).toList();
 
-  final unreviewedAssessments = assessments.where((a) => !a.reviewed).toList();
+    final unreviewedAssessments = assessments.where((a) => !a.reviewed).toList();
 
-  final clientScores = <String, List<AssessmentSession>>{};
-  for (final a in unreviewedAssessments) {
-    clientScores.putIfAbsent(a.clientId, () => []).add(a);
-  }
+    final clientScores = <String, List<AssessmentSession>>{};
+    for (final a in unreviewedAssessments) {
+      clientScores.putIfAbsent(a.clientId, () => []).add(a);
+    }
 
-  final clientAliasMap = {for (final c in clients) c.id: c.aliasCode};
+    final clientAliasMap = {for (final c in clients) c.id: c.aliasCode};
 
-  final highRiskAlerts = <AssessmentSession>[];
-  for (final entry in clientScores.entries) {
-    final clientAssessments = entry.value
-      ..sort((AssessmentSession a, AssessmentSession b) => b.createdAt.compareTo(a.createdAt));
-    final latest = clientAssessments.first;
-    for (final score in latest.scores.values) {
-      if (score.severity == 'High Risk' ||
-          score.severity == 'Severe' ||
-          score.severity == 'Extremely Severe' ||
-          score.severity == 'Moderate Risk') {
-        final alias = clientAliasMap[latest.clientId] ?? '';
-        highRiskAlerts.add(AssessmentSession(
-          sessionId: latest.sessionId,
-          psychologistId: latest.psychologistId,
-          clientId: latest.clientId,
-          clientAlias: alias.isNotEmpty ? alias : latest.clientAlias,
-          testId: latest.testId,
-          createdAt: latest.createdAt,
-          rawResponses: latest.rawResponses,
-          scores: latest.scores,
-          linkedSessionId: latest.linkedSessionId,
-        ));
-        break;
+    final highRiskAlerts = <AssessmentSession>[];
+    for (final entry in clientScores.entries) {
+      final clientAssessments = entry.value
+        ..sort((AssessmentSession a, AssessmentSession b) => b.createdAt.compareTo(a.createdAt));
+      final latest = clientAssessments.first;
+      for (final score in latest.scores.values) {
+        if (score.severity == 'High Risk' ||
+            score.severity == 'Severe' ||
+            score.severity == 'Extremely Severe' ||
+            score.severity == 'Moderate Risk') {
+          final alias = clientAliasMap[latest.clientId] ?? '';
+          highRiskAlerts.add(AssessmentSession(
+            sessionId: latest.sessionId,
+            organizationId: latest.organizationId,
+            psychologistId: latest.psychologistId,
+            clientId: latest.clientId,
+            clientAlias: alias.isNotEmpty ? alias : latest.clientAlias,
+            testId: latest.testId,
+            createdAt: latest.createdAt,
+            rawResponses: latest.rawResponses,
+            scores: latest.scores,
+            linkedSessionId: latest.linkedSessionId,
+          ));
+          break;
+        }
       }
     }
+    highRiskAlerts.sort((AssessmentSession a, AssessmentSession b) => b.createdAt.compareTo(a.createdAt));
+
+    final int weekAssessments = assessments.where((AssessmentSession a) {
+      return a.createdAt.isAfter(weekStart);
+    }).length;
+
+    return DashboardData(
+      clientCount: clients.length,
+      sessions: sessions,
+      todaySessions: todaySessions,
+      weekSessionCount: weekSessions,
+      weekAssessmentCount: weekAssessments,
+      recentClients: recentClients,
+      highRiskAlerts: highRiskAlerts.take(5).toList(),
+      newClientsThisWeek: clients.where((Client c) {
+        return c.createdAt.isAfter(weekStart);
+      }).length,
+    );
+  } catch (_) {
+    return DashboardData(
+      clientCount: 0,
+      sessions: [],
+      todaySessions: [],
+      weekSessionCount: 0,
+      weekAssessmentCount: 0,
+      recentClients: [],
+      highRiskAlerts: [],
+      newClientsThisWeek: 0,
+    );
   }
-  highRiskAlerts.sort((AssessmentSession a, AssessmentSession b) => b.createdAt.compareTo(a.createdAt));
-
-  final int weekAssessments = assessments.where((AssessmentSession a) {
-    return a.createdAt.isAfter(weekStart);
-  }).length;
-
-  return DashboardData(
-    clientCount: clients.length,
-    sessions: sessions,
-    todaySessions: todaySessions,
-    weekSessionCount: weekSessions,
-    weekAssessmentCount: weekAssessments,
-    recentClients: recentClients,
-    highRiskAlerts: highRiskAlerts.take(5).toList(),
-    newClientsThisWeek: clients.where((Client c) {
-      return c.createdAt.isAfter(weekStart);
-    }).length,
-  );
 }
 
 class DashboardData {

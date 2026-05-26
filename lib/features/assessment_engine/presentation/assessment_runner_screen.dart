@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/design_system/app_design_system.dart';
 import '../../../features/auth/presentation/providers/auth_providers.dart';
+import '../../clients/presentation/providers/client_detail_providers.dart';
 import '../data/assessment_repository.dart';
 import '../data/assessment_session_repository.dart';
 import '../domain/assessment_models.dart';
@@ -220,10 +221,14 @@ class _AssessmentBodyState extends ConsumerState<_AssessmentBody> {
                                 );
 
                                 final auth = ref.read(authProvider);
+                                final orgId = widget.clientId != null
+                                    ? (ref.read(clientByIdProvider(widget.clientId!))?.organizationId ?? '')
+                                    : '';
                                 final assessmentSession = AssessmentSession(
                                   sessionId: DateTime.now()
                                       .millisecondsSinceEpoch
                                       .toString(),
+                                  organizationId: orgId,
                                   psychologistId: auth.uid ?? 'unknown',
                                   clientId: widget.clientId ?? '',
                                   clientAlias: widget.clientAlias,

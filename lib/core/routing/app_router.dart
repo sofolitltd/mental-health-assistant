@@ -2,6 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../features/admin/presentation/screens/admin_admins_screen.dart';
+import '../../features/admin/presentation/screens/admin_assessments_screen.dart';
+import '../../features/admin/presentation/screens/admin_clients_screen.dart';
+import '../../features/admin/presentation/screens/admin_counselors_screen.dart';
+import '../../features/admin/presentation/screens/admin_dashboard_screen.dart';
+import '../../features/admin/presentation/screens/admin_login_screen.dart';
+import '../../features/admin/presentation/screens/admin_navigation_shell.dart';
+import '../../features/admin/presentation/screens/admin_organizations_screen.dart';
+import '../../features/admin/presentation/screens/admin_sessions_screen.dart';
+import '../../features/admin/presentation/screens/admin_settings_screen.dart';
 import '../../features/auth/presentation/providers/auth_providers.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
@@ -30,16 +40,22 @@ GoRouter appRouter(ref) {
   return GoRouter(
     initialLocation: '/login',
     redirect: (context, state) {
-      final isLoggingIn = state.uri.path == '/login';
-      final isRegistering = state.uri.path == '/register';
+      final path = state.uri.path;
+      final isLoggingIn = path == '/login';
+      final isRegistering = path == '/register';
+      final isAdminRoute = path.startsWith('/admin/');
+
+      if (path == '/admin') return '/admin/login';
+
+      if (isRegistering) return '/login';
 
       if (!authState.isAuthenticated) {
-        if (isLoggingIn || isRegistering) return null;
+        if (isLoggingIn || isAdminRoute) return null;
         return '/login';
       }
 
-      if (isLoggingIn || isRegistering) return '/dashboard';
-      if (state.uri.path == '/') return '/dashboard';
+      if (isLoggingIn) return '/dashboard';
+      if (path == '/') return '/dashboard';
       return null;
     },
     routes: [
@@ -54,6 +70,99 @@ GoRouter appRouter(ref) {
         name: 'register',
         pageBuilder: (context, state) =>
             const NoTransitionPage(child: RegisterScreen()),
+      ),
+      GoRoute(
+        path: '/admin/login',
+        name: 'adminLogin',
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: AdminLoginScreen()),
+      ),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return AdminNavigationShell(navigationShell: navigationShell);
+        },
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/admin/dashboard',
+                name: 'adminDashboard',
+                pageBuilder: (context, state) =>
+                    const NoTransitionPage(child: AdminDashboardScreen()),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/admin/counselors',
+                name: 'adminCounselors',
+                pageBuilder: (context, state) =>
+                    const NoTransitionPage(child: AdminCounselorsScreen()),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/admin/clients',
+                name: 'adminClients',
+                pageBuilder: (context, state) =>
+                    const NoTransitionPage(child: AdminClientsScreen()),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/admin/assessments',
+                name: 'adminAssessments',
+                pageBuilder: (context, state) =>
+                    const NoTransitionPage(child: AdminAssessmentsScreen()),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/admin/sessions',
+                name: 'adminSessions',
+                pageBuilder: (context, state) =>
+                    const NoTransitionPage(child: AdminSessionsScreen()),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/admin/admins',
+                name: 'adminAdmins',
+                pageBuilder: (context, state) =>
+                    const NoTransitionPage(child: AdminAdminsScreen()),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/admin/organizations',
+                name: 'adminOrganizations',
+                pageBuilder: (context, state) =>
+                    const NoTransitionPage(child: AdminOrganizationsScreen()),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/admin/settings',
+                name: 'adminSettings',
+                pageBuilder: (context, state) =>
+                    const NoTransitionPage(child: AdminSettingsScreen()),
+              ),
+            ],
+          ),
+        ],
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {

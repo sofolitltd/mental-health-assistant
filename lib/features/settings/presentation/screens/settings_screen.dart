@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '/core/design_system/app_design_system.dart';
 import '/features/auth/presentation/providers/auth_providers.dart';
+import 'widgets/change_password_dialog.dart';
 import 'widgets/developer_info.dart';
 import 'widgets/profile_card.dart';
 import 'widgets/settings_card.dart';
@@ -38,6 +39,14 @@ class SettingsScreen extends ConsumerWidget {
                 centerTitle: false,
               ),
               SliverToBoxAdapter(child: ProfileCard(authState: authState)),
+              SliverToBoxAdapter(child: SectionHeader(title: 'Account')),
+              SliverToBoxAdapter(child: SettingsCard(child: Column(children: [
+                SettingsListTile(
+                  title: 'Change Password',
+                  icon: Icons.lock_outline_rounded,
+                  onTap: () => showDialog(context: context, builder: (_) => const ChangePasswordDialog()),
+                ),
+              ]))),
               SliverToBoxAdapter(child: SectionHeader(title: 'Appearance')),
               SliverToBoxAdapter(child: ThemeSection(ref: ref)),
               SliverToBoxAdapter(child: SectionHeader(title: 'MHPSS Basics')),

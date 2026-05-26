@@ -6,6 +6,7 @@ const _sentinel = _Sentinel();
 
 class Session {
   final String id;
+  final String organizationId;
   final String clientId;
   final String clientAlias;
   final List<String> counselorIds;
@@ -23,6 +24,7 @@ class Session {
 
   const Session({
     required this.id,
+    this.organizationId = '',
     required this.clientId,
     required this.clientAlias,
     this.counselorIds = const [],
@@ -41,6 +43,7 @@ class Session {
 
   Session copyWith({
     String? id,
+    String? organizationId,
     String? clientId,
     String? clientAlias,
     List<String>? counselorIds,
@@ -58,6 +61,7 @@ class Session {
   }) {
     return Session(
       id: id ?? this.id,
+      organizationId: organizationId ?? this.organizationId,
       clientId: clientId ?? this.clientId,
       clientAlias: clientAlias ?? this.clientAlias,
       counselorIds: counselorIds ?? this.counselorIds,
@@ -76,6 +80,7 @@ class Session {
   }
 
   Map<String, dynamic> toMap() => {
+        'organizationId': organizationId,
         'clientId': clientId,
         'clientAlias': clientAlias,
         'counselorIds': counselorIds,
@@ -94,6 +99,7 @@ class Session {
 
   factory Session.fromMap(Map<String, dynamic> map, String id) => Session(
         id: id,
+        organizationId: map['organizationId'] as String? ?? '',
         clientId: map['clientId'] as String,
         clientAlias: map['clientAlias'] as String? ?? '',
         counselorIds: map['counselorIds'] != null

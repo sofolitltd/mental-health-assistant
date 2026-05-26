@@ -182,6 +182,7 @@ class AssessmentsTab extends ConsumerWidget {
                               final (selectedId, selectedDate) = result;
                               final updated = AssessmentSession(
                                 sessionId: assessment.sessionId,
+                                organizationId: assessment.organizationId,
                                 psychologistId: assessment.psychologistId,
                                 clientId: assessment.clientId,
                                 clientAlias: assessment.clientAlias,

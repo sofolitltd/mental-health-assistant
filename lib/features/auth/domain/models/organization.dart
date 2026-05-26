@@ -9,6 +9,7 @@ abstract class Organization with _$Organization {
     required String id,
     required String name,
     String? code,
+    DateTime? createdAt,
   }) = _Organization;
 
   factory Organization.fromJson(Map<String, dynamic> json) =>

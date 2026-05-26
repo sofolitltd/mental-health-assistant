@@ -2,6 +2,7 @@ import 'scoring_engine.dart';
 
 class AssessmentSession {
   final String sessionId;
+  final String organizationId;
   final String psychologistId;
   final String clientId;
   final String clientAlias;
@@ -14,6 +15,7 @@ class AssessmentSession {
 
   const AssessmentSession({
     required this.sessionId,
+    this.organizationId = '',
     required this.psychologistId,
     required this.clientId,
     required this.clientAlias,
@@ -26,6 +28,7 @@ class AssessmentSession {
   });
 
   Map<String, dynamic> toJson() => {
+        'organizationId': organizationId,
         'sessionId': sessionId,
         'psychologistId': psychologistId,
         'clientId': clientId,
@@ -45,6 +48,7 @@ class AssessmentSession {
     final scoresMap = json['scores'] as Map<String, dynamic>? ?? {};
     return AssessmentSession(
       sessionId: json['sessionId'] as String,
+      organizationId: json['organizationId'] as String? ?? '',
       psychologistId: json['psychologistId'] as String? ?? 'unknown',
       clientId: json['clientId'] as String,
       clientAlias: json['clientAlias'] as String? ?? '',

@@ -15,4 +15,19 @@ class CounselorRepository {
                 Counselor.fromMap(doc.data(), doc.id))
             .toList());
   }
+
+  Future<void> updateCounselor({
+    required String uid,
+    required String name,
+    required String designation,
+    required String employeeId,
+    required String phone,
+  }) async {
+    await _firestore.collection('counselors').doc(uid).update({
+      'name': name,
+      'designation': designation,
+      'employeeId': employeeId,
+      'phone': phone,
+    });
+  }
 }

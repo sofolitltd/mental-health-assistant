@@ -181,20 +181,32 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xl),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                  child: Text(
+                    "Don't have an account? Contact your organization admin to create one. You'll receive an email to set up your password.",
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondary,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.lg),
                 TextButton(
-                  onPressed: () => context.go('/register'),
+                  onPressed: () => context.go('/admin/login'),
                   child: RichText(
                     text: TextSpan(
-                      text: "Don't have an account? ",
+                      text: 'Admin Login',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondary,
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w500,
                       ),
                       children: [
-                        TextSpan(
-                          text: 'Create one',
-                          style: TextStyle(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.bold,
+                        WidgetSpan(
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 4),
+                            child: Icon(Icons.shield_rounded, size: 14, color: AppColors.primary),
                           ),
                         ),
                       ],

@@ -100,6 +100,7 @@ class _AssessmentResultsScreenState
       final (selectedId, selectedDate) = result;
       _session = AssessmentSession(
         sessionId: _session.sessionId,
+        organizationId: _session.organizationId,
         psychologistId: _session.psychologistId,
         clientId: _session.clientId,
         clientAlias: _session.clientAlias,
