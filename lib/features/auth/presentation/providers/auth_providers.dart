@@ -63,6 +63,8 @@ class Auth extends _$Auth {
           isLoading: false,
           error: 'Login failed. Please check your credentials.',
         );
+      } else {
+        state = state.copyWith(isLoading: false, error: null);
       }
     } catch (e) {
       state = state.copyWith(isLoading: false, error: _formatError(e));
@@ -92,6 +94,8 @@ class Auth extends _$Auth {
       );
       if (!success) {
         state = state.copyWith(isLoading: false, error: 'Registration failed');
+      } else {
+        state = state.copyWith(isLoading: false, error: null);
       }
     } catch (e) {
       state = state.copyWith(isLoading: false, error: _formatError(e));

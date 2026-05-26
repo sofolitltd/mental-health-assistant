@@ -98,25 +98,44 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                               ref.invalidate(allAssessmentSessionsProvider);
                               ref.invalidate(dashboardDataProvider);
                               if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: const Text('Alert dismissed'),
-                                    behavior: SnackBarBehavior.floating,
-                                    duration: const Duration(seconds: 2),
-                                    action: SnackBarAction(
-                                      label: 'Undo',
-                                      onPressed: () async {
-                                        try {
-                                          await ref.read(assessmentSessionRepositoryProvider).markAsUnreviewed(sessionId);
-                                          ref.invalidate(allAssessmentSessionsProvider);
-                                          ref.invalidate(dashboardDataProvider);
-                                        } catch (e, stack) {
-                                          AppLogger.error('Failed to undo dismiss', {'sessionId': sessionId}, e, stack);
-                                        }
-                                      },
-                                    ),
+                                final snackBar = SnackBar(
+                                  content: Row(
+                                    children: [
+                                      const Text('Alert dismissed'),
+                                      const Spacer(),
+                                      TextButton(
+                                        style: TextButton.styleFrom(
+                                          foregroundColor: Theme.of(context).colorScheme.secondary,
+                                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                                          minimumSize: Size.zero,
+                                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                        ),
+                                        onPressed: () {
+                                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                          try {
+                                            ref.read(assessmentSessionRepositoryProvider).markAsUnreviewed(sessionId);
+                                            ref.invalidate(allAssessmentSessionsProvider);
+                                            ref.invalidate(dashboardDataProvider);
+                                          } catch (e, stack) {
+                                            AppLogger.error('Failed to undo dismiss', {'sessionId': sessionId}, e, stack);
+                                          }
+                                        },
+                                        child: const Text('Undo'),
+                                      ),
+                                      const SizedBox(width: 4),
+                                      IconButton(
+                                        icon: const Icon(Icons.close, size: 18),
+                                        padding: EdgeInsets.zero,
+                                        constraints: const BoxConstraints(),
+                                        color: textPrimary,
+                                        onPressed: () => ScaffoldMessenger.of(context).hideCurrentSnackBar(),
+                                      ),
+                                    ],
                                   ),
+                                  behavior: SnackBarBehavior.floating,
+                                  duration: const Duration(seconds: 4),
                                 );
+                                ScaffoldMessenger.of(context).showSnackBar(snackBar);
                               }
                             } catch (e, stack) {
                               AppLogger.error('Failed to dismiss alert', {'sessionId': sessionId}, e, stack);

@@ -38,7 +38,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (next.isAuthenticated) {
         context.go('/');
       }
-      if (next.error != null) {
+      if (next.error != null && !next.isAuthenticated) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(next.error!),
